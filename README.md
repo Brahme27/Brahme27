@@ -8,7 +8,7 @@
 
 📫 How to reach me:
 Email: [zaynbrahme@gmail.com]
-LinkedIn: [linkedin.com/in/Brahme27]
+LinkedIn: [www.linkedin.com/in/brahme27]
 
 Pronouns: He/Him.
 
