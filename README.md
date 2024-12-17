@@ -2,9 +2,9 @@
 
 👀 I’m interested in machine learning, data science, and AI.
 
-🌱 I’m currently learning the Complete Data Science, Machine Learning, DL, NLP Bootcamp from Krish Naik.
+🌱 I’m always eager to work with like-minded people in the fields of machine learning, data science, and AI to learn, grow, and build impactful solutions.
 
-💞️ I’m looking to collaborate on machine learning projects, data analysis, and model optimization.
+💞️ I’m definitely not the most intelligent or smartest person, but I can confidently say I’m very curious, hardworking, and a bit of a workholic when it comes to this field.
 
 📫 How to reach me:
 Email: [zaynbrahme@gmail.com]
