@@ -10,7 +10,7 @@
 Email: [zaynbrahme@gmail.com]
 LinkedIn: [www.linkedin.com/in/brahme27]
 
-💻 Checkout my work here: Github:[https://github.com/Brahme27]
+💻 Checkout my work here: Github:[https://github.com/Brahme27?tab=repositories]
 
 Pronouns: He/Him.
 
