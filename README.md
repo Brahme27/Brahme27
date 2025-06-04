@@ -10,6 +10,8 @@
 Email: [zaynbrahme@gmail.com]
 LinkedIn: [www.linkedin.com/in/brahme27]
 
+💻 Checkout my work here: Github:[github.com/Brahme27]
+
 Pronouns: He/Him.
 
 🎯 Hobbies: Playing cricket, listening to music, and swimming.
