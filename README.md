@@ -4,7 +4,7 @@
 
 🌱 I’m always eager to work with like-minded people in the fields of machine learning, data science, and AI to learn, grow, and build impactful solutions.
 
-💞️ I’m definitely not the most intelligent or smartest person, but I can confidently say I’m very curious, hardworking, and a bit of a workholic when it comes to this field.
+💞️ I’m definitely not the most intelligent or smartest person, but I can confidently say I’m very disciplined,curious, hardworking, and a bit of a workholic when it comes to this field.
 
 📫 How to reach me:
 Email: [zaynbrahme@gmail.com]
