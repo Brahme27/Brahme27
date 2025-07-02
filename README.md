@@ -1,14 +1,15 @@
 I’m Brahmesh,people call me Brahme.
 
-I’m interested in machine learning, data science, and AI.
+No shame in saying this:
+I only know about machine learning, data science, and AI. I haven’t worked in other fields and don’t have skills outside this area
 
-I practically worked on these skills: DS,ML,DL,NLP,MLOPS,GEN AI,AGENTIC AI
+LinkedIn >> long bios. Check out my profile: [www.linkedin.com/in/brahme27] — every post reflects my real work.
 
-Favourite Libraries/Frame works : Pandas , Scikit-Learn , LangChain , LangGrpah
+I practically worked on these skills: DS , ML , DL , NLP , MLOPS , GEN AI, AGENTIC AI--->[Learning....]
+
+Dont know why but these are my Fav : Pandas , Scikit-Learn , LangChain , LangGrpah , MLOPS Tools
 
 Email: [zaynbrahme@gmail.com]
-
-LinkedIn >>> Long intros.Checkout LinkedIn: [www.linkedin.com/in/brahme27]
 
 Checkout my practical work here: Github:[https://github.com/Brahme27?tab=repositories]
 
