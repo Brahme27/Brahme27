@@ -1,7 +1,6 @@
 I’m Brahmesh,people call me Brahme.
 
-No shame in saying this:
-
+No shame in saying this :
 I only know about machine learning, data science, and AI. I haven’t worked in other fields and don’t have skills outside this area
 
 LinkedIn >> long bios. Check out my profile: [www.linkedin.com/in/brahme27] — every post shows my real work.
