@@ -9,7 +9,7 @@ Every post shows my real work. 💼
 
 ### 🛠️ **Practical Skills**
 **Worked on:**
-`DS`, `ML`, `DL`, `NLP`, `MLOps`, `GenAI`, `Agentic AI` → *\[Learning...]* 📚
+`DS`, `ML`, `DL`, `NLP`, `MLOps`, `GenAI`, `Agentic AI`
 
 **Favorites:**
 🐼 Pandas, 🤖 Scikit-Learn, 🔗 LangChain, 🧠 LangGraph, 🛠️ MLOps Tools
