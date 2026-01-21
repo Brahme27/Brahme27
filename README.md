@@ -19,4 +19,4 @@ Being surrounded by people at this level is pushing me forward faster than any i
 ### Future
 Teaching has always been close to my heart.
 
-Everything I learn—through hard work, real-world experience, and years of building systems—I plan to pass on to curious learners who genuinely want to understand technology, not just use it.
+Everything I learn through hard work, real-world experience, and years of building systems.I plan to pass on to curious learners who genuinely want to understand technology, not just use it.
