@@ -1,30 +1,22 @@
-**I’m Brahmesh, people call me Brahme.** 🙋‍♂️
+## Brahmesh (Brahme)
 
-**No shame in saying this:** I only know about **Machine Learning, Data Science, and AI**.
-I haven’t worked in other fields and don’t have skills outside this area. 🎯
+Nothing more to explain here.
+My **LinkedIn** and **GitHub** speak better than I can.
 
-**LinkedIn > long bios** — check out my profile:
-🔗 [www.linkedin.com/in/brahme27](https://www.linkedin.com/in/brahme27)
-Every post shows my real work. 💼
+### Learning Phase
+The phase where I needed to explain what I know is done.
+My learning, progress, and consistency are already visible through my work.
 
-### 🛠️ **Practical Skills**
-**Worked on:**
-`DS`, `ML`, `DL`, `NLP`, `MLOps`, `GenAI`, `Agentic AI`
+You can check my **LinkedIn** and **GitHub** to understand how I think, build, and grow.
 
-**Favorites:**
-🐼 Pandas, 🤖 Scikit-Learn, 🔗 LangChain, 🧠 LangGraph, 🛠️ MLOps Tools
+### Current Situation
+I'am working very closely with **senior software engineers, DevOps engineers, product managers, and senior architects** in a startup.
+I’m incredibly happy to be part of this team.
 
-### 📫 **Contact**
-✉️ **Email:** [zaynbrahme@gmail.com](mailto:zaynbrahme@gmail.com)
-💻 **GitHub:** [github.com/Brahme27](https://github.com/Brahme27?tab=repositories)
+Being surrounded by people at this level is pushing me forward faster than any isolated learning ever could. I’m confident this environment is keeping me **4–5 years ahead** in terms of real-world engineering exposure and system thinking.
 
-### 🙋‍♂️ Pronouns
-**He/Him**
 
-### 🎯 Hobbies
-🏏 Playing cricket
-🎧 Listening to music
-🏊 Swimming
+### Future
+Teaching has always been close to my heart.
 
-### 👨‍🏫 **Teachers Who Inspire Me**
-Krish Naik, Sandeep Jain, Abdul Bari
+Everything I learn—through hard work, real-world experience, and years of building systems—I plan to pass on to curious learners who genuinely want to understand technology, not just use it.
