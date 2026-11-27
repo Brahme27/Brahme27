@@ -46,30 +46,6 @@ async function yearData(y) {
   } catch (e) { return []; }
 }
 
-function heat(y, days, total) {
-  const C = ['#111a33', '#0e4429', '#006d32', '#26a641', '#39d353'];
-  const off = new Date(days[0].d + 'T00:00:00Z').getUTCDay();
-  const b = [[], [], [], [], []], mon = []; let lastM = -1, weeks = 1;
-  days.forEach((x, i) => {
-    const k = i + off, col = Math.floor(k / 7), row = k % 7, px = 44 + col * 14, py = 46 + row * 14;
-    weeks = col + 1; b[x.l].push(`M${px} ${py}h11v11h-11z`);
-    const m = new Date(x.d + 'T00:00:00Z').getUTCMonth();
-    if ((row === 0 || i === 0) && m !== lastM) { mon.push(`<text x="${px}" y="40">${MN[m]}</text>`); lastM = m; }
-  });
-  const W = Math.max(800, 44 + weeks * 14 + 20);
-  const leg = C.map((c, i) => `<rect x="${W - 170 + i * 16}" y="156" width="11" height="11" rx="2" fill="${c}"/>`).join('');
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} 180" width="${W}" height="180" font-family="'SF Mono',Menlo,Consolas,'Courier New',monospace" font-size="11" fill="#8da2d0"><rect width="${W}" height="180" rx="14" fill="#0a1020" stroke="#1f3a78"/><text x="44" y="24" font-size="15" font-weight="700" fill="#eaf1ff">${total.toLocaleString('en-US')} contributions in ${y}</text>${mon.join('')}<text x="10" y="${46 + 14 + 9}">Mon</text><text x="10" y="${46 + 42 + 9}">Wed</text><text x="10" y="${46 + 70 + 9}">Fri</text>${b.map((p, i) => p.length ? `<path d="${p.join('')}" fill="${C[i]}"/>` : '').join('')}<text x="${W - 206}" y="165">Less</text>${leg}<text x="${W - 84}" y="165">More</text></svg>`;
-}
-
-function updateReadme(years) {
-  if (!fs.existsSync('README.md')) return;
-  let r = fs.readFileSync('README.md', 'utf8'); const a = '<!--CONTRIB_START-->', z = '<!--CONTRIB_END-->';
-  if (!r.includes(a)) return;
-  const body = years.map(Y => `<details>\n<summary><b>${Y.y}</b> · ${Y.total.toLocaleString('en-US')} contributions</summary>\n\n<img src="contrib-${Y.y}.svg?v=${Y.total}" alt="${Y.y} contributions" width="100%">\n\n</details>`).join('\n');
-  const blk = `${a}\n<details>\n<summary><b>Contributions by year</b></summary>\n\n${body}\n\n</details>\n${z}`;
-  r = r.replace(new RegExp(a + '[\\s\\S]*?' + z), () => blk); fs.writeFileSync('README.md', r);
-}
-
 (async () => {
   const s = { repos: '--', stars: '--', contrib: '--', followers: '--' };
   let langs = LANGS || 'Python / Terraform / Docker';
@@ -100,14 +76,9 @@ function updateReadme(years) {
     const days = await yearData(y);
     const total = days.reduce((a, x) => a + x.n, 0);
     if (!total) continue;
-    fs.writeFileSync(`contrib-${y}.svg`, heat(y, days, total));
     years.push({ y, total, days });
   }
-  if (s.contrib === '--' && years.length) {
-    const cut = new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10);
-    s.contrib = years.reduce((a, Y) => a + Y.days.filter(x => x.d >= cut).reduce((b, x) => b + x.n, 0), 0);
-  }
-  updateReadme(years);
+  if (years.length) s.contrib = years.reduce((a, Y) => a + Y.total, 0);   // all-time total
   const TC = { silver: '#c9d6f2', bronze: '#e0a36b', gold: '#f5d36b', '': '#7fa3ff' };
   let cx = 50, cy = 494; const chips = [];
   ach.forEach(a => {
@@ -118,7 +89,7 @@ function updateReadme(years) {
     cx += w + 10;
   });
   const achBlock = `<text x="50" y="478" font-size="12" letter-spacing="4" fill="#7f93c4">ACHIEVEMENTS</text>${chips.join('')}`;
-  const yearSection = years.length ? `<section class="yrs"><label>Contributions by year <select id="yr">${years.map(Y => `<option value="${Y.y}">${Y.y} · ${Y.total.toLocaleString('en-US')}</option>`).join('')}</select></label>${years.map(Y => `<div class="yh" data-y="${Y.y}">${heat(Y.y, Y.days, Y.total)}</div>`).join('')}</section>` : '';
+
 
   const stat = (x, label, v) => `<text x="${x}" y="625" font-size="13" letter-spacing="4" fill="#7f93c4">${label}</text><circle class="pulse" cx="${x+235}" cy="620" r="4" fill="#2f7bff"/><text x="${x}" y="676" font-size="46" fill="#eaf1ff">${f(v)}</text>`;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" width="1200" height="720" font-family="'SF Mono',Menlo,Consolas,'Courier New',monospace" role="img" aria-label="GitHub profile card for ${USER}">
@@ -180,9 +151,9 @@ html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-a
 main{max-width:1200px;margin:0 auto;padding:28px 16px;text-align:center}
 h1{font-size:15px;font-weight:500;letter-spacing:.12em;margin:0 0 20px}
 svg{width:100%;height:auto;display:block;border-radius:28px;box-shadow:0 0 80px #1a3fb355}
-p{color:var(--mut);font-size:14px;margin-top:18px}.yrs{margin-top:28px;text-align:left}.yrs label{font-size:14px;color:var(--mut)}.yrs select{margin-left:10px;background:#0a1020;color:var(--fg);border:1px solid #1f3a78;border-radius:8px;padding:6px 10px;font-size:14px}.yh{overflow-x:auto;margin-top:14px}.yh svg{width:auto;min-width:800px;box-shadow:none;border-radius:14px}</style></head><body><main>
-<h1>WOW PROFILE · ${USER.toUpperCase()} · LIVE</h1>${svg}${yearSection}
-<p>Stats are a snapshot from the last build. The README version refreshes itself daily.</p></main><script>(function(){var s=document.getElementById("yr");if(!s)return;function show(){document.querySelectorAll(".yh").forEach(function(e){e.hidden=e.dataset.y!==s.value})}s.addEventListener("change",show);show()})()</script></body></html>`;
+p{color:var(--mut);font-size:14px;margin-top:18px}</style></head><body><main>
+<h1>WOW PROFILE · ${USER.toUpperCase()} · LIVE</h1>${svg}
+<p>Stats are a snapshot from the last build. The README version refreshes itself daily.</p></main></body></html>`;
   fs.writeFileSync('card.html', html);
   console.log('Built', s, langs);
 })();
