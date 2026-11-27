@@ -14,6 +14,62 @@ const j = async u => { const r = await fetch(u, { headers: H }); if (!r.ok) thro
 const f = v => typeof v === 'number' ? v.toLocaleString('en-US') : v;
 const dp = (id, c, r, g) => `<pattern id="${id}" width="${g}" height="${g}" patternUnits="userSpaceOnUse"><circle cx="${g/2}" cy="${g/2}" r="${r}" fill="${c}"/></pattern>`;
 
+
+const ACH_FALLBACK = [{name:'Pair Extraordinaire',tier:'silver',count:3},{name:'Pull Shark',tier:'silver',count:3},{name:'YOLO',tier:'',count:1},{name:'Quickdraw',tier:'',count:1},{name:'Starstruck',tier:'bronze',count:2}];
+const UA = { 'User-Agent': 'Mozilla/5.0' };
+const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const esc = t => String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+async function achievements() {
+  try {
+    const h = await (await fetch(`https://github.com/${USER}`, { headers: UA })).text();
+    const idx = [...h.matchAll(/alt="Achievement: ([^"]+)"/g)].map(m => [m[1], m.index]);
+    const seen = new Set(), out = [];
+    idx.forEach(([n, i], k) => {
+      if (seen.has(n)) return; seen.add(n);
+      const seg = h.slice(i, (idx[k + 1] || [0, i + 1800])[1]);
+      const t = /achievement-tier-label--(\w+)[^>]*>\s*x(\d+)/.exec(seg);
+      out.push({ name: n, tier: t ? t[1] : '', count: t ? +t[2] : 1 });
+    });
+    return out;
+  } catch (e) { return null; }
+}
+
+async function yearData(y) {
+  try {
+    const h = await (await fetch(`https://github.com/users/${USER}/contributions?from=${y}-01-01&to=${y}-12-31`, { headers: UA })).text();
+    const cnt = {};
+    for (const m of h.matchAll(/for="(contribution-day-component-\d+-\d+)"[^>]*>(No|\d+) contributions? on/g)) cnt[m[1]] = m[2] === 'No' ? 0 : +m[2];
+    const days = [];
+    for (const m of h.matchAll(/data-date="(\d{4}-\d\d-\d\d)"\s+id="([^"]+)"\s+data-level="(\d)"/g)) days.push({ d: m[1], n: cnt[m[2]] || 0, l: +m[3] });
+    return days.sort((a, b) => a.d < b.d ? -1 : 1);
+  } catch (e) { return []; }
+}
+
+function heat(y, days, total) {
+  const C = ['#111a33', '#0e4429', '#006d32', '#26a641', '#39d353'];
+  const off = new Date(days[0].d + 'T00:00:00Z').getUTCDay();
+  const b = [[], [], [], [], []], mon = []; let lastM = -1, weeks = 1;
+  days.forEach((x, i) => {
+    const k = i + off, col = Math.floor(k / 7), row = k % 7, px = 44 + col * 14, py = 46 + row * 14;
+    weeks = col + 1; b[x.l].push(`M${px} ${py}h11v11h-11z`);
+    const m = new Date(x.d + 'T00:00:00Z').getUTCMonth();
+    if ((row === 0 || i === 0) && m !== lastM) { mon.push(`<text x="${px}" y="40">${MN[m]}</text>`); lastM = m; }
+  });
+  const W = Math.max(800, 44 + weeks * 14 + 20);
+  const leg = C.map((c, i) => `<rect x="${W - 170 + i * 16}" y="156" width="11" height="11" rx="2" fill="${c}"/>`).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} 180" width="${W}" height="180" font-family="'SF Mono',Menlo,Consolas,'Courier New',monospace" font-size="11" fill="#8da2d0"><rect width="${W}" height="180" rx="14" fill="#0a1020" stroke="#1f3a78"/><text x="44" y="24" font-size="15" font-weight="700" fill="#eaf1ff">${total.toLocaleString('en-US')} contributions in ${y}</text>${mon.join('')}<text x="10" y="${46 + 14 + 9}">Mon</text><text x="10" y="${46 + 42 + 9}">Wed</text><text x="10" y="${46 + 70 + 9}">Fri</text>${b.map((p, i) => p.length ? `<path d="${p.join('')}" fill="${C[i]}"/>` : '').join('')}<text x="${W - 206}" y="165">Less</text>${leg}<text x="${W - 84}" y="165">More</text></svg>`;
+}
+
+function updateReadme(years) {
+  if (!fs.existsSync('README.md')) return;
+  let r = fs.readFileSync('README.md', 'utf8'); const a = '<!--CONTRIB_START-->', z = '<!--CONTRIB_END-->';
+  if (!r.includes(a)) return;
+  const body = years.map(Y => `<details>\n<summary><b>${Y.y}</b> · ${Y.total.toLocaleString('en-US')} contributions</summary>\n\n<img src="contrib-${Y.y}.svg?v=${Y.total}" alt="${Y.y} contributions" width="100%">\n\n</details>`).join('\n');
+  const blk = `${a}\n<details>\n<summary><b>Contributions by year</b></summary>\n\n${body}\n\n</details>\n${z}`;
+  r = r.replace(new RegExp(a + '[\\s\\S]*?' + z), () => blk); fs.writeFileSync('README.md', r);
+}
+
 (async () => {
   const s = { repos: '--', stars: '--', contrib: '--', followers: '--' };
   let langs = LANGS || 'Python / Terraform / Docker';
@@ -35,6 +91,34 @@ const dp = (id, c, r, g) => `<pattern id="${id}" width="${g}" height="${g}" patt
       s.contrib = (await r.json()).data.user.contributionsCollection.contributionCalendar.totalContributions;
     } catch (e) { console.log('GraphQL failed'); }
   }
+
+
+  let ach = await achievements();
+  if (!ach || !ach.length) ach = ACH_FALLBACK;
+  const years = [];
+  for (let y = new Date().getUTCFullYear(); y >= 2019; y--) {
+    const days = await yearData(y);
+    const total = days.reduce((a, x) => a + x.n, 0);
+    if (!total) continue;
+    fs.writeFileSync(`contrib-${y}.svg`, heat(y, days, total));
+    years.push({ y, total, days });
+  }
+  if (s.contrib === '--' && years.length) {
+    const cut = new Date(Date.now() - 365 * 864e5).toISOString().slice(0, 10);
+    s.contrib = years.reduce((a, Y) => a + Y.days.filter(x => x.d >= cut).reduce((b, x) => b + x.n, 0), 0);
+  }
+  updateReadme(years);
+  const TC = { silver: '#c9d6f2', bronze: '#e0a36b', gold: '#f5d36b', '': '#7fa3ff' };
+  let cx = 50, cy = 494; const chips = [];
+  ach.forEach(a => {
+    const t = esc(a.name) + (a.count > 1 ? ` ×${a.count}` : ''), w = Math.round(t.length * 7.9 + 26);
+    if (cx + w > 690) { cx = 50; cy += 36; }
+    const c = TC[a.tier] || TC[''];
+    chips.push(`<rect x="${cx}" y="${cy}" width="${w}" height="28" rx="14" fill="#0e1830" stroke="${c}" stroke-opacity=".6"/><text x="${cx + 13}" y="${cy + 18}" font-size="13" fill="${c}">${t}</text>`);
+    cx += w + 10;
+  });
+  const achBlock = `<text x="50" y="478" font-size="12" letter-spacing="4" fill="#7f93c4">ACHIEVEMENTS</text>${chips.join('')}`;
+  const yearSection = years.length ? `<section class="yrs"><label>Contributions by year <select id="yr">${years.map(Y => `<option value="${Y.y}">${Y.y} · ${Y.total.toLocaleString('en-US')}</option>`).join('')}</select></label>${years.map(Y => `<div class="yh" data-y="${Y.y}">${heat(Y.y, Y.days, Y.total)}</div>`).join('')}</section>` : '';
 
   const stat = (x, label, v) => `<text x="${x}" y="625" font-size="13" letter-spacing="4" fill="#7f93c4">${label}</text><circle class="pulse" cx="${x+235}" cy="620" r="4" fill="#2f7bff"/><text x="${x}" y="676" font-size="46" fill="#eaf1ff">${f(v)}</text>`;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" width="1200" height="720" font-family="'SF Mono',Menlo,Consolas,'Courier New',monospace" role="img" aria-label="GitHub profile card for ${USER}">
@@ -82,6 +166,7 @@ ${LOCATION ? `<text x="50" y="458" font-size="15" fill="#6f85b5">${LOCATION}</te
 <circle class="ring2" cx="930" cy="335" r="212" fill="none" stroke="#7a5cff" stroke-width="2" stroke-dasharray="90 1242" opacity=".8"/>
 <clipPath id="pc"><circle cx="200" cy="200" r="206"/></clipPath>
 <g transform="translate(730 135)"><g clip-path="url(#pc)">${PORTRAIT}<rect class="scan" x="0" y="0" width="400" height="30" fill="url(#scan)"/></g></g>
+${achBlock}
 <path d="M50 585H1150" stroke="#1f3a78"/>
 ${stat(50,'REPOSITORIES',s.repos)}${stat(335,'STARS',s.stars)}${stat(620,'CONTRIBUTIONS',s.contrib)}${stat(905,'FOLLOWERS',s.followers)}
 </svg>`;
@@ -95,9 +180,9 @@ html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-a
 main{max-width:1200px;margin:0 auto;padding:28px 16px;text-align:center}
 h1{font-size:15px;font-weight:500;letter-spacing:.12em;margin:0 0 20px}
 svg{width:100%;height:auto;display:block;border-radius:28px;box-shadow:0 0 80px #1a3fb355}
-p{color:var(--mut);font-size:14px;margin-top:18px}</style></head><body><main>
-<h1>WOW PROFILE · ${USER.toUpperCase()} · LIVE</h1>${svg}
-<p>Stats are a snapshot from the last build. The README version refreshes itself daily.</p></main></body></html>`;
+p{color:var(--mut);font-size:14px;margin-top:18px}.yrs{margin-top:28px;text-align:left}.yrs label{font-size:14px;color:var(--mut)}.yrs select{margin-left:10px;background:#0a1020;color:var(--fg);border:1px solid #1f3a78;border-radius:8px;padding:6px 10px;font-size:14px}.yh{overflow-x:auto;margin-top:14px}.yh svg{width:auto;min-width:800px;box-shadow:none;border-radius:14px}</style></head><body><main>
+<h1>WOW PROFILE · ${USER.toUpperCase()} · LIVE</h1>${svg}${yearSection}
+<p>Stats are a snapshot from the last build. The README version refreshes itself daily.</p></main><script>(function(){var s=document.getElementById("yr");if(!s)return;function show(){document.querySelectorAll(".yh").forEach(function(e){e.hidden=e.dataset.y!==s.value})}s.addEventListener("change",show);show()})()</script></body></html>`;
   fs.writeFileSync('card.html', html);
   console.log('Built', s, langs);
 })();
